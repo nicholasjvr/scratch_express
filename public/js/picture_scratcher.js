@@ -92,41 +92,32 @@ const createScratchCard = (canvasId) => {
         }
     };
 
-    const checkLeadStatus = async (leadId) => {
-        const url = `https://localhost:8000/status`;
+    const checkLeadStatus = (leadId) => {
+        const url = `http://localhost:8000/status/${leadId}`;
 
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-              
-             
-            });
-              console.log(response);
+        // fetch('http://localhost:8000/status')
+        // .then(response => response.json())
+        // .then(usersList => {
+        //   console.log(usersList);
+        //   // Write an action that you want you want to perform with the response
+        // })
+        // .catch(error => {
+        //   console.log(error);
+        //   // Handle the error in case the request is not successfull
+        // });
 
-            if (response.code === "INVALID_TOKEN") { // Token expired
-                const newAccessToken = await getNewAccessToken(refreshToken);
-                if (newAccessToken) {
-                    // Retry with new access token
-                    return checkLeadStatus(leadId);
-                } else {
-                    throw new Error('Failed to refresh access token');
-                }
+        fetch(url, {
+            method: 'GET',
+        })
+        .then(
+            response=>{
+                console.log(response);
             }
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            return data.data[0].hasScratched;
-        } catch (error) {
-            console.error('Error fetching lead status:', error);
-            return false;
-        }
+        )
     };
 
     const updateLeadStatus = async (leadId) => {
-        const url = `https://www.zohoapis.com/crm/v3/Leads/${leadId}`;
+        const url = `http://www.zohoapis.com/crm/v3/Leads/${leadId}`;
 
         try {
             const response = await fetch(url, {

@@ -8,9 +8,7 @@ body {
     min-height: 100vh;
     background-color: #f0f0f0;
     flex-direction: column-reverse; 
-    /* background-image: url('img/zohoimplementation.gif'); */
-    background-image: url('/public/img/moneytress.gif');
-    /* background-color: #FF7F00; */
+    background-image: url(/public/img/moneytrees.gif);
     background-size: cover; /* Ensure the background image covers the whole page */
     background-position: center; /* Center the background image */
     background-repeat: no-repeat; /* Prevent the background image from repeating */
