@@ -1,5 +1,3 @@
-let accessToken = "1000.6a704eb7fde1f9a6aeaa12d989a0abd1.47bbe8df0777405faa008ba40c27c692"; // Replace with your initial access token
-const refreshToken = "1000.500ceb92badc8a2c9ddb04f38d2d9738.5ea7af8e25020e3af0880a7754bd8a25"; // Replace with your refresh token
 
 const createScratchCard = (canvasId) => {
     let canvas = document.getElementById(canvasId).querySelector("canvas");
@@ -60,99 +58,42 @@ const createScratchCard = (canvasId) => {
     const leadId = getUrlParameter('id');
     console.log('URL parameter prize:', leadId);
 
-    const getNewAccessToken = async (refreshToken) => {
-        const url = "https://localhost:8000/token";
-        const clientId = "1000.YJ99QF288RQVHN4THYB5V5KU5RA71A"; // Replace with your client ID
-        const clientSecret = "4ae6844763df9f498aacc45e593732d5dc70922d10"; // Replace with your client secret
 
+    //!!!!!!!!!!!!!!!!!!
+    const checkLeadStatus = async (leadId) => {
+        const url = `http://localhost:8000/status/${leadId}`;
+    
         try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    refresh_token: refreshToken,
-                    client_id: clientId,
-                    client_secret: clientSecret,
-                    grant_type: 'refresh_token'
-                })
-            });
-
+            const response = await fetch(url, { method: 'GET' });
+    
             if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const data = await response.json();
-            accessToken = data.access_token; // Update the global access token variable
-            return accessToken;
+            const data = await response.json(); // Assuming the response is JSON
+            console.log("CHECK LEAD STATUS RESPONSE", data.hasScratched);
+            return data.hasScratched;
         } catch (error) {
-            console.error('Error refreshing access token:', error);
-            return null;
+            console.error("Error checking lead status:", error);
+            return null; // Return null or handle the error as needed
         }
     };
+    
 
-    const checkLeadStatus = (leadId) => {
-        const url = `http://localhost:8000/status/${leadId}`;
-
-        // fetch('http://localhost:8000/status')
-        // .then(response => response.json())
-        // .then(usersList => {
-        //   console.log(usersList);
-        //   // Write an action that you want you want to perform with the response
-        // })
-        // .catch(error => {
-        //   console.log(error);
-        //   // Handle the error in case the request is not successfull
-        // });
-
-        fetch(url, {
-            method: 'GET',
-        })
-        .then(
-            response=>{
-                console.log(response);
-            }
-        )
-    };
-
+    //!!!!!!!!!!!!!!!
     const updateLeadStatus = async (leadId) => {
-        const url = `http://www.zohoapis.com/crm/v3/Leads/${leadId}`;
-
+        console.log(leadId);
+        const url = `http://localhost:8000/status/${leadId}`;
+    
         try {
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Zoho-oauthtoken ${accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    data: [
-                        {
-                            hasScratched: true
-                        }
-                    ]
-                })
-            });
-
-            if (response.code === "INVALID_TOKEN") { // Token expired
-                const newAccessToken = await getNewAccessToken(refreshToken);
-                if (newAccessToken) {
-                    // Retry with new access token
-                    return updateLeadStatus(leadId);
-                } else {
-                    throw new Error('Failed to refresh access token');
-                }
-            }
-
+            const response = await fetch(url, { method: 'POST' });
+    
             if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const data = await response.json();
-            console.log('CRM update response:', data);
+            const data = await response.json(); // Assuming the response is JSON
+            console.log("Update data status", data)
         } catch (error) {
-            console.error('Error updating CRM:', error);
+            console.error("Error checking lead status:", error);
         }
     };
 
@@ -161,16 +102,16 @@ const createScratchCard = (canvasId) => {
         if (percentage > 50) {
             alert(`Lead ID ${leadId} has scratched more than 50% of the card!`);
 
-            // Update the CRM
-            updateLeadStatus(leadId);
+            updateLeadStatus(leadId);//!!!!!!!!!!!!!
         } else {
             requestAnimationFrame(checkScratchedPercentage);
         }
     };
 
     const initializeScratchCard = async () => {
-        const hasScratched = await checkLeadStatus(leadId);
-        if (hasScratched) {
+        const hasScratched = await checkLeadStatus(leadId);//!!!!!!!!!!!!!!
+        console.log("HAS SCRATCHED" + hasScratched);//!!!!!!!!!!!!!!!!!!
+        if (hasScratched === 'true') {
             alert('You have already scratched the card.');
             return;
         }
