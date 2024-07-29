@@ -68,8 +68,9 @@ const updateLead = async (leadId) => {
                 {
                     'hasScratched': true
                 }
-            ]
-        }
+            ],
+            'trigger': ['workflow']
+            }
     };
 
     try {
