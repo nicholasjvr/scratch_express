@@ -8,7 +8,7 @@ const createScratchCard = () => {
 
     // Define bottom images based on orientation
     const bottomImages = {
-        landscape: 'public/img/win_landscape.png',
+        landscape: "public/img/win_landscape.png",
         portrait: 'public/img/win_portrait.png'
     };
 
@@ -139,7 +139,7 @@ const createScratchCard = () => {
                 console.log('Top image loaded and drawn.');
             };
 
-            topImage.src = window.innerWidth > window.innerHeight ? 'public/img/scratch_landscape.png' : 'public/img/scratch_portrait.png';
+            topImage.src = window.innerWidth > window.innerHeight ? "scratch_landscape.png" : "img/scratch_portrait.png";
         };
 
         bottomImage.onerror = (error) => {
@@ -203,7 +203,7 @@ const createScratchCard = () => {
     // Adjust images on window resize
     window.addEventListener('resize', () => {
         setBottomImage();
-        topImage.src = window.innerWidth > window.innerHeight ? 'public/img/scratch_landscape.png' : 'public/img/scratch_portrait.png';
+        topImage.src = window.innerWidth > window.innerHeight ? 'img/scratch_landscape.png' : 'img/scratch_portrait.png';
     });
 
     initializeScratchCard();
