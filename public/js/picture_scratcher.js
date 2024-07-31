@@ -150,19 +150,20 @@ const createScratchCard = () => {
             alert('You have already scratched the card.');
             return;
         }
+
         bottomImage.onload = () => {
             console.log('Bottom image loaded.');
-
             topImage.onload = () => {
                 console.log('Top image loaded.');
                 drawBottomImage();
                 drawTopImage();
                 document.querySelector('.bottom-image-container').classList.add('show');
+                requestAnimationFrame(checkScratchedPercentage);
             };
-
             topImage.onerror = (error) => {
                 console.error('Error loading top image:', error);
             };
+            drawBottomImage(); // Draw bottom image first
         };
 
         bottomImage.onerror = (error) => {
@@ -180,7 +181,6 @@ const createScratchCard = () => {
     });
 
     initializeScratchCard();
-    requestAnimationFrame(checkScratchedPercentage);
 
     // Disable touch scroll on mobile devices
     document.body.addEventListener('touchmove', (event) => {
