@@ -135,7 +135,7 @@ const createScratchCard = () => {
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
         if (percentage > 70) {
-            alert(`Lead ID ${leadId} has scratched more than 70% of the card!`);
+            alert(`You Have Successfully Entered (70% OF THE CARD HAS BEEN SCRATCHED THIS IS A DEBUG MESSAGE)`);
             updateLeadStatus(leadId);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
@@ -147,7 +147,7 @@ const createScratchCard = () => {
         const hasScratched = await checkLeadStatus(leadId);
         console.log("HAS SCRATCHED", hasScratched);
         if (hasScratched === 'true') {
-            alert('You have already scratched the card.');
+            alert('You Have Already Scratched and Entered The Competition');
             return;
         }
 
