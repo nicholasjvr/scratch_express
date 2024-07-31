@@ -3,7 +3,7 @@ const createScratchCard = () => {
     let context = canvas.getContext("2d", { willReadFrequently: true });
     let topImage = new Image();
     let bottomImage = new Image();
-    let scratchRadius = 50;
+    let scratchRadius = 30;
     let isDragging = false;
 
     // Set the source for images
@@ -135,7 +135,7 @@ const createScratchCard = () => {
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
         if (percentage > 70) {
-            alert(`You Have Successfully Entered (70% OF THE CARD HAS BEEN SCRATCHED THIS IS A DEBUG MESSAGE)`);
+            alert(`You Have Successfully Entered The Competition (scratched 80%)`);
             updateLeadStatus(leadId);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
@@ -174,8 +174,8 @@ const createScratchCard = () => {
     // Adjust canvas size on resize
     window.addEventListener('resize', () => {
         const portrait = window.matchMedia("(orientation: portrait)").matches;
-        canvas.width = portrait ? 400 : 450; // Adjust width as needed
-        canvas.height = portrait ? 600 : 650; // Adjust height as needed
+        canvas.width = portrait ? 400 : 420; // Adjust width as needed
+        canvas.height = portrait ? 550 : 600; // Adjust height as needed
         drawBottomImage();
         drawTopImage();
     });

@@ -28,8 +28,8 @@ img {
     --border-color: rgb(255, 14, 14);
     --heading-padding: 8px 32px;
     --heading-margin-bottom: 42px;
-    --scratch-card-width:  450px;
-    --scratch-card-height: 600px;
+    --scratch-card-width:  400px;
+    --scratch-card-height: 550px;
     --border-radius: 10px;
     --margin-bottom: 32px;
     --font-size: 24px;
@@ -52,6 +52,8 @@ img {
     margin: auto;
     overflow: hidden;
     position: relative;
+    /* Add margin-top to move the scratch card higher */
+    margin-top: 20px;
 }
 
 h2.main-heading {
@@ -126,7 +128,8 @@ canvas {
     .scratch-container {
         width: calc(var(--scratch-card-width) - 60px);
         height: calc(var(--scratch-card-height) - 60px);
-        margin: auto;
+        margin: 0 auto; /* Center horizontally */
+        margin-top: -50px; /* Adjust top margin as needed */
     }
 
     .logo-container {
@@ -140,7 +143,7 @@ canvas {
 
     .right-logo {
         right: 20px;
-        bottom: 35px;
+        bottom: 30px; /* Adjust bottom positioning */
     }
 }
 
@@ -152,5 +155,6 @@ canvas {
     .scratch-container {
         width: var(--scratch-card-width);
         height: var(--scratch-card-height);
+        margin-top: 20px; /* Adjust top margin as needed */
     }
 }
