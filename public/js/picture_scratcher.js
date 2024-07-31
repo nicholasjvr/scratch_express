@@ -99,7 +99,7 @@ const createScratchCard = () => {
     console.log('URL parameter prize:', leadId);
 
     const checkLeadStatus = async (leadId) => {
-        const url = `http://localhost:8000/status/${leadId}`;
+        const url = `https://scratch-and-win.onrender.com/status/${leadId}`;
 
         try {
             const response = await fetch(url, { method: 'GET' });
@@ -117,7 +117,7 @@ const createScratchCard = () => {
     };
 
     const updateLeadStatus = async (leadId) => {
-        const url = `http://localhost:8000/status/${leadId}`;
+        const url = `https://scratch-and-win.onrender.com/status/${leadId}`;
 
         try {
             const response = await fetch(url, { method: 'POST' });
@@ -134,8 +134,8 @@ const createScratchCard = () => {
 
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
-        if (percentage > 70) {
-            alert(`You Have Successfully Entered The Competition (scratched 80%)`);
+        if (percentage > 90) {
+            alert(`You Have Successfully Entered The Competition (scratched 90%)`);
             updateLeadStatus(leadId);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
