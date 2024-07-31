@@ -151,6 +151,7 @@ const createScratchCard = () => {
             return;
         }
 
+        console.log("HELLO");
         bottomImage.onload = () => {
             console.log('Bottom image loaded.');
             topImage.onload = () => {
