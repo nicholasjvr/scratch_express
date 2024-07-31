@@ -174,8 +174,8 @@ const createScratchCard = () => {
     // Adjust canvas size on resize
     window.addEventListener('resize', () => {
         const portrait = window.matchMedia("(orientation: portrait)").matches;
-        canvas.width = portrait ? 300 : 350; // Adjust width as needed
-        canvas.height = portrait ? 550 : 600; // Adjust height as needed
+        canvas.width = portrait ? 400 : 450; // Adjust width as needed
+        canvas.height = portrait ? 600 : 650; // Adjust height as needed
         drawBottomImage();
         drawTopImage();
     });
