@@ -1,41 +1,40 @@
 const createScratchCard = () => {
     let canvas = document.getElementById("scratch-canvas");
-const createScratchCard = () => {
-    let canvas = document.getElementById("scratch-canvas");
-    let context = canvas.getContext("2d");
+    let context = canvas.getContext("2d", { willReadFrequently: true });
     let topImage = new Image();
-    let bottomImage = new Image();
     let bottomImage = new Image();
     let scratchRadius = 25;
     let isDragging = false;
 
-    // Set the source for bottom image
-    const setBottomImage = () => {
-        bottomImage.src = 'public/img/win.png';
+    // Set the source for images
+    bottomImage.src = 'img/you_win.png';
+    topImage.src = 'img/scratch_here.png';
+
+    // Draw the bottom image first
+    const drawBottomImage = () => {
+        context.globalCompositeOperation = "source-over";
+        context.drawImage(bottomImage, 0, 0, canvas.width, canvas.height);
     };
 
-    // Draw the top image on the canvas
+    // Draw the top image on top of the bottom image
     const drawTopImage = () => {
-        console.log('Drawing top image...');
-        console.log('Drawing top image...');
         context.globalCompositeOperation = "source-over";
         context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
     };
 
     // Handle the scratch effect
-    // Handle the scratch effect
     const scratch = (x, y) => {
+        // Adjust coordinates to be relative to the canvas
         const rect = canvas.getBoundingClientRect();
-        x = x - rect.left;
-        y = y - rect.top;
+        const canvasX = x - rect.left;
+        const canvasY = y - rect.top;
 
         context.globalCompositeOperation = "destination-out";
         context.beginPath();
-        context.arc(x, y, scratchRadius, 0, 2 * Math.PI);
+        context.arc(canvasX, canvasY, scratchRadius, 0, 2 * Math.PI);
         context.fill();
     };
 
-    // Calculate the percentage of scratched area
     // Calculate the percentage of scratched area
     const calculateScratchedPercentage = () => {
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -51,225 +50,86 @@ const createScratchCard = () => {
         return (scratchedPixels / totalPixels) * 100;
     };
 
-    // Function to get URL parameters
-    function getUrlParameter(name) {
-        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-        const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-        const results = regex.exec(location.search);
-        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    }
-
-    const leadId = getUrlParameter('id');
-    console.log('URL parameter prize:', leadId);
-
-    // Check the lead status
-    const checkLeadStatus = async (leadId) => {
-        const url = `http://localhost:8000/status/${leadId}`;
-
-
-        try {
-            const response = await fetch(url, { method: 'GET' });
-
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            console.log("CHECK LEAD STATUS RESPONSE", data.hasScratched);
-            return data.hasScratched;
-        } catch (error) {
-            console.error("Error checking lead status:", error);
-            return null;
+    // Event listeners for mouse and touch events
+    const handlePointerMove = (event) => {
+        event.preventDefault(); // Prevent default action
+        if (isDragging) {
+            scratch(event.clientX, event.clientY);
         }
     };
 
-    // Update the lead status
+    canvas.addEventListener("mousedown", (event) => {
+        event.preventDefault(); // Prevent default action
+        isDragging = true;
+        scratch(event.clientX, event.clientY);
+    });
 
-    const updateLeadStatus = async (leadId) => {
-        console.log(leadId);
-        const url = `http://localhost:8000/status/${leadId}`;
+    canvas.addEventListener("mousemove", handlePointerMove);
 
+    canvas.addEventListener("mouseup", (event) => {
+        event.preventDefault(); // Prevent default action
+        isDragging = false;
+    });
 
-        try {
-            const response = await fetch(url, { method: 'POST' });
+    canvas.addEventListener("mouseleave", (event) => {
+        event.preventDefault(); // Prevent default action
+        isDragging = false;
+    });
 
+    canvas.addEventListener("touchstart", (event) => {
+        event.preventDefault(); // Prevent default action
+        isDragging = true;
+        const touch = event.touches[0];
+        scratch(touch.clientX, touch.clientY);
+    });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json(); // Assuming the response is JSON
-            console.log("Update data status", data);
-            const data = await response.json();
-            console.log("Update data status", data);
-        } catch (error) {
-            console.error("Error updating lead status:", error);
-            console.error("Error updating lead status:", error);
+    canvas.addEventListener("touchmove", (event) => {
+        event.preventDefault(); // Prevent default action
+        if (isDragging) {
+            const touch = event.touches[0];
+            scratch(touch.clientX, touch.clientY);
         }
-    };
+    });
 
-    // Check the scratched percentage and show the button
-    const checkScratchedPercentage = () => {
-        const percentage = calculateScratchedPercentage();
-        if (percentage > 50) {
-            document.getElementById('claim-button').style.display = 'block'; // Show the button
-            document.getElementById('claim-button').style.display = 'block'; // Show the button
-            alert(`Lead ID ${leadId} has scratched more than 50% of the card!`);
-            updateLeadStatus(leadId);
-            updateLeadStatus(leadId);
-        } else {
-            requestAnimationFrame(checkScratchedPercentage);
-        }
-    };
+    canvas.addEventListener("touchend", (event) => {
+        event.preventDefault(); // Prevent default action
+        isDragging = false;
+    });
 
     // Initialize the scratch card
     const initializeScratchCard = async () => {
-        const hasScratched = await checkLeadStatus(leadId);
-        console.log("HAS SCRATCHED", hasScratched);
-        const hasScratched = await checkLeadStatus(leadId);
-        console.log("HAS SCRATCHED", hasScratched);
-        if (hasScratched === 'true') {
-            alert('You have already scratched the card.');
-            return;
-        }
-
-        // Load bottom image first
-        bottomImage.onload = () => {
-            context.drawImage(bottomImage, 0, 0, canvas.width, canvas.height);
-            console.log('Bottom image loaded and drawn.');
-
-            // Now that the bottom image is set, load the top image
-            topImage.onload = () => {
-                drawTopImage();
-                requestAnimationFrame(checkScratchedPercentage);
-                console.log('Top image loaded and drawn.');
-            };
-
-            topImage.src = window.innerWidth > window.innerHeight ? "scratch_landscape.png" : "img/scratch_portrait.png";
-        };
-
-        bottomImage.onerror = (error) => {
-            console.error('Error loading bottom image:', error);
-        };
-
-        topImage.onerror = (error) => {
-            console.error('Error loading top image:', error);
-        };
-
-        setBottomImage();
-
-        // Event listeners for mouse and touch events
-        // Load bottom image first
         bottomImage.onload = () => {
             console.log('Bottom image loaded.');
-            context.drawImage(bottomImage, 0, 0, canvas.width, canvas.height);
-            console.log('Bottom image drawn.');
+            drawBottomImage(); // Draw bottom image first
 
-            // Now load the top image
             topImage.onload = () => {
-                drawTopImage();
+                console.log('Top image loaded.');
+                drawTopImage(); // Draw top image last
+                document.querySelector('.bottom-image-container').classList.add('show'); // Show the bottom image container
                 requestAnimationFrame(checkScratchedPercentage);
-                console.log('Top image loaded and drawn.');
             };
 
             topImage.onerror = (error) => {
                 console.error('Error loading top image:', error);
             };
-
-            topImage.src = "img/scratch_port.png";
         };
 
         bottomImage.onerror = (error) => {
             console.error('Error loading bottom image:', error);
         };
-
-        setBottomImage();
-
-        // Event listeners for mouse and touch events
-        canvas.addEventListener("mousedown", (event) => {
-            event.preventDefault(); // Prevent default action
-            event.preventDefault(); // Prevent default action
-            isDragging = true;
-            scratch(event.clientX, event.clientY);
-        });
-        
-        canvas.addEventListener("mousemove", (event) => {
-            event.preventDefault(); // Prevent default action
-            event.preventDefault(); // Prevent default action
-            if (isDragging) {
-                scratch(event.clientX, event.clientY);
-            }
-        });
-        
-        canvas.addEventListener("mouseup", (event) => {
-            event.preventDefault(); // Prevent default action
-
-        canvas.addEventListener("mouseup", (event) => {
-            event.preventDefault(); // Prevent default action
-            isDragging = false;
-        });
-        
-        canvas.addEventListener("mouseleave", (event) => {
-            event.preventDefault(); // Prevent default action
-
-        canvas.addEventListener("mouseleave", (event) => {
-            event.preventDefault(); // Prevent default action
-            isDragging = false;
-        });
-        
-        canvas.addEventListener("touchstart", (event) => {
-            event.preventDefault(); // Prevent default action
-            isDragging = true;
-            const touch = event.touches[0];
-            scratch(touch.clientX, touch.clientY);
-        });
-        
-        canvas.addEventListener("touchmove", (event) => {
-            event.preventDefault(); // Prevent default action
-            if (isDragging) {
-                const touch = event.touches[0];
-                scratch(touch.clientX, touch.clientY);
-            }
-        });
-        
-        canvas.addEventListener("touchend", (event) => {
-            event.preventDefault(); // Prevent default action
-            isDragging = false;
-        });
-
-        canvas.addEventListener("touchstart", (event) => {
-            event.preventDefault(); // Prevent default action
-            isDragging = true;
-            const touch = event.touches[0];
-            scratch(touch.clientX, touch.clientY);
-        });
-
-        canvas.addEventListener("touchmove", (event) => {
-            event.preventDefault(); // Prevent default action
-            if (isDragging) {
-                const touch = event.touches[0];
-                scratch(touch.clientX, touch.clientY);
-            }
-        });
-
-        canvas.addEventListener("touchend", (event) => {
-            event.preventDefault(); // Prevent default action
-            isDragging = false;
-        });
-
-        console.log('Top image source:', topImage.src);
-        console.log('Random bottom image source:', getBottomImageSrc());
     };
 
-    // Adjust images on window resize
+    // Adjust canvas size on resize
     window.addEventListener('resize', () => {
-        setBottomImage();
-        topImage.src = window.innerWidth > window.innerHeight ? 'img/scratch_landscape.png' : 'img/scratch_portrait.png';
-    });
-
-    window.addEventListener('resize', () => {
-        setBottomImage();
-        topImage.src = 'img/scratch_port.png';
+        canvas.width = window.innerWidth * 0.9; // Adjust size as needed
+        canvas.height = window.innerHeight * 0.6; // Adjust size as needed
+        bottomImage.src = 'img/you_win.png';
+        topImage.src = 'img/scratch_here.png';
     });
 
     initializeScratchCard();
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+    createScratchCard();
+});
