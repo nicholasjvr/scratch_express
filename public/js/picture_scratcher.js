@@ -99,7 +99,7 @@ const createScratchCard = () => {
     console.log('URL parameter prize:', leadId);
 
     const checkLeadStatus = async (leadId) => {
-        const url = `https://scratch-and-win.onrender.com/status/${leadId}`;
+        const url = `https://scratch.dsltelecom.co.za/status/${leadId}`;
 
         try {
             const response = await fetch(url, { method: 'GET' });
@@ -117,7 +117,7 @@ const createScratchCard = () => {
     };
 
     const updateLeadStatus = async (leadId) => {
-        const url = `https://scratch-and-win.onrender.com/status/${leadId}`;
+        const url = `https://scratch.dsltelecom.co.za/status/${leadId}`;
 
         try {
             const response = await fetch(url, { method: 'POST' });
