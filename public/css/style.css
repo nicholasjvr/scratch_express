@@ -2,16 +2,12 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    overflow: hidden; /* Prevent scrolling */
     background-image: url('/img/background_image.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
+    background-attachment: fixed; /* Fix background */
 }
 
 body {
@@ -22,13 +18,18 @@ body {
     min-height: 100vh;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 :root {
     --main-padding: 20px;
     --border-color: rgb(255, 14, 14);
     --heading-padding: 8px 32px;
     --heading-margin-bottom: 42px;
-    --scratch-card-width: 250px;
-    --scratch-card-height: 500px;
+    --scratch-card-width: 400px;
+    --scratch-card-height: 700px;
     --border-radius: 10px;
     --margin-bottom: 32px;
     --font-size: 24px;
@@ -123,8 +124,8 @@ canvas {
     }
 
     .scratch-container {
-        width: calc(var(--scratch-card-width) - 60px); /* Adjust width with padding */
-        height: calc(var(--scratch-card-height) - 60px); /* Adjust height with padding */
+        width: calc(var(--scratch-card-width) - 60px);
+        height: calc(var(--scratch-card-height) - 60px);
         margin: auto;
     }
 

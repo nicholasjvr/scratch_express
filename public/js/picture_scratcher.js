@@ -3,7 +3,7 @@ const createScratchCard = () => {
     let context = canvas.getContext("2d", { willReadFrequently: true });
     let topImage = new Image();
     let bottomImage = new Image();
-    let scratchRadius = 25;
+    let scratchRadius = 50;
     let isDragging = false;
 
     // Set the source for images
@@ -73,8 +73,83 @@ const createScratchCard = () => {
         isDragging = false;
     });
 
+    // Calculate the percentage of scratched area
+    const calculateScratchedPercentage = () => {
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        let totalPixels = imageData.width * imageData.height;
+        let scratchedPixels = 0;
+
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            if (imageData.data[i + 3] === 0) { // alpha channel
+                scratchedPixels++;
+            }
+        }
+
+        return (scratchedPixels / totalPixels) * 100;
+    };
+
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        const results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    const leadId = getUrlParameter('id');
+    console.log('URL parameter prize:', leadId);
+
+    const checkLeadStatus = async (leadId) => {
+        const url = `http://localhost:8000/status/${leadId}`;
+
+        try {
+            const response = await fetch(url, { method: 'GET' });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log("CHECK LEAD STATUS RESPONSE", data.hasScratched);
+            return data.hasScratched;
+        } catch (error) {
+            console.error("Error checking lead status:", error);
+            return null;
+        }
+    };
+
+    const updateLeadStatus = async (leadId) => {
+        const url = `http://localhost:8000/status/${leadId}`;
+
+        try {
+            const response = await fetch(url, { method: 'POST' });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log("Update data status", data);
+        } catch (error) {
+            console.error("Error updating lead status:", error);
+        }
+    };
+
+    const checkScratchedPercentage = () => {
+        const percentage = calculateScratchedPercentage();
+        if (percentage > 70) {
+            alert(`Lead ID ${leadId} has scratched more than 70% of the card!`);
+            updateLeadStatus(leadId);
+        } else {
+            requestAnimationFrame(checkScratchedPercentage);
+        }
+    };
+
     // Initialize the scratch card
     const initializeScratchCard = async () => {
+        const hasScratched = await checkLeadStatus(leadId);
+        console.log("HAS SCRATCHED", hasScratched);
+        if (hasScratched === 'true') {
+            alert('You have already scratched the card.');
+            return;
+        }
         bottomImage.onload = () => {
             console.log('Bottom image loaded.');
 
@@ -98,13 +173,19 @@ const createScratchCard = () => {
     // Adjust canvas size on resize
     window.addEventListener('resize', () => {
         const portrait = window.matchMedia("(orientation: portrait)").matches;
-        canvas.width = portrait ? 200 : 250; // Adjust width as needed
-        canvas.height = portrait ? 450 : 500; // Adjust height as needed
+        canvas.width = portrait ? 350 : 400; // Adjust width as needed
+        canvas.height = portrait ? 600 : 700; // Adjust height as needed
         drawBottomImage();
         drawTopImage();
     });
 
     initializeScratchCard();
+    requestAnimationFrame(checkScratchedPercentage);
+
+    // Disable touch scroll on mobile devices
+    document.body.addEventListener('touchmove', (event) => {
+        event.preventDefault();
+    }, { passive: false });
 };
 
 document.addEventListener('DOMContentLoaded', () => {
