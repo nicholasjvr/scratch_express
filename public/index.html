@@ -8,16 +8,20 @@
 </head>
 <body>
     <div class="main-container">
-        <img src="img/dslblack.png">
-        <h2 class="main-heading">SCRATCH THE CARD TO REVEAL YOUR PRIZE</h2>
         <div class="scratch-container">
             <div id="scratch_card" class="scratch-card">
                 <div class="bottom-image-container">
-                    <img alt="Scratch Ticket" id="bottom-image">
+                    <img id="bottom-image" alt = "bottom-image">
                 </div>
-                <canvas width="500" height="300"></canvas> 
+                <canvas id="scratch-canvas" width="600" height="400"></canvas> 
             </div>
         </div>    
+        <div class="logo-container left-logo">
+            <img src="img/logo_left.png" alt="Left Logo">
+        </div>
+        <div class="logo-container right-logo">
+            <img src="img/logo_right.png" alt="Right Logo">
+        </div>
     </div>
     <script src="js/picture_scratcher.js"></script>
 </body>
