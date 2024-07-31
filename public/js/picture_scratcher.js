@@ -35,64 +35,41 @@ const createScratchCard = () => {
         context.fill();
     };
 
-    // Calculate the percentage of scratched area
-    const calculateScratchedPercentage = () => {
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        let totalPixels = imageData.width * imageData.height;
-        let scratchedPixels = 0;
-
-        for (let i = 0; i < imageData.data.length; i += 4) {
-            if (imageData.data[i + 3] === 0) { // alpha channel
-                scratchedPixels++;
-            }
-        }
-
-        return (scratchedPixels / totalPixels) * 100;
-    };
-
     // Event listeners for mouse and touch events
     const handlePointerMove = (event) => {
-        event.preventDefault(); // Prevent default action
+        event.preventDefault();
         if (isDragging) {
-            scratch(event.clientX, event.clientY);
+            scratch(event.clientX || event.touches[0].clientX, event.clientY || event.touches[0].clientY);
         }
     };
 
     canvas.addEventListener("mousedown", (event) => {
-        event.preventDefault(); // Prevent default action
+        event.preventDefault();
         isDragging = true;
         scratch(event.clientX, event.clientY);
     });
 
     canvas.addEventListener("mousemove", handlePointerMove);
-
     canvas.addEventListener("mouseup", (event) => {
-        event.preventDefault(); // Prevent default action
+        event.preventDefault();
         isDragging = false;
     });
 
     canvas.addEventListener("mouseleave", (event) => {
-        event.preventDefault(); // Prevent default action
+        event.preventDefault();
         isDragging = false;
     });
 
     canvas.addEventListener("touchstart", (event) => {
-        event.preventDefault(); // Prevent default action
+        event.preventDefault();
         isDragging = true;
         const touch = event.touches[0];
         scratch(touch.clientX, touch.clientY);
     });
 
-    canvas.addEventListener("touchmove", (event) => {
-        event.preventDefault(); // Prevent default action
-        if (isDragging) {
-            const touch = event.touches[0];
-            scratch(touch.clientX, touch.clientY);
-        }
-    });
-
+    canvas.addEventListener("touchmove", handlePointerMove);
     canvas.addEventListener("touchend", (event) => {
-        event.preventDefault(); // Prevent default action
+        event.preventDefault();
         isDragging = false;
     });
 
@@ -100,13 +77,12 @@ const createScratchCard = () => {
     const initializeScratchCard = async () => {
         bottomImage.onload = () => {
             console.log('Bottom image loaded.');
-            drawBottomImage(); // Draw bottom image first
 
             topImage.onload = () => {
                 console.log('Top image loaded.');
-                drawTopImage(); // Draw top image last
-                document.querySelector('.bottom-image-container').classList.add('show'); // Show the bottom image container
-                requestAnimationFrame(checkScratchedPercentage);
+                drawBottomImage();
+                drawTopImage();
+                document.querySelector('.bottom-image-container').classList.add('show');
             };
 
             topImage.onerror = (error) => {
@@ -121,10 +97,11 @@ const createScratchCard = () => {
 
     // Adjust canvas size on resize
     window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth * 0.9; // Adjust size as needed
-        canvas.height = window.innerHeight * 0.6; // Adjust size as needed
-        bottomImage.src = 'img/you_win.png';
-        topImage.src = 'img/scratch_here.png';
+        const portrait = window.matchMedia("(orientation: portrait)").matches;
+        canvas.width = portrait ? 200 : 250; // Adjust width as needed
+        canvas.height = portrait ? 450 : 500; // Adjust height as needed
+        drawBottomImage();
+        drawTopImage();
     });
 
     initializeScratchCard();
