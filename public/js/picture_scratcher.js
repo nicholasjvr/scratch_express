@@ -144,22 +144,23 @@ const createScratchCard = () => {
 
     // Initialize the scratch card
     const initializeScratchCard = async () => {
-        const hasScratched = await checkLeadStatus(leadId);
-        console.log("HAS SCRATCHED", hasScratched);
-        if (hasScratched === 'true') {
-            alert('You Have Already Scratched and Entered The Competition');
-            return;
-        }
+        
 
         console.log("HELLO");
         bottomImage.onload = () => {
             console.log('Bottom image loaded.');
-            topImage.onload = () => {
+            topImage.onload = async () => {
                 console.log('Top image loaded.');
                 drawBottomImage();
                 drawTopImage();
                 document.querySelector('.bottom-image-container').classList.add('show');
                 requestAnimationFrame(checkScratchedPercentage);
+                const hasScratched = await checkLeadStatus(leadId);
+                console.log("HAS SCRATCHED", hasScratched);
+                if (hasScratched === 'true') {
+                    alert('You Have Already Scratched and Entered The Competition');
+                    return;
+                }
             };
             topImage.onerror = (error) => {
                 console.error('Error loading top image:', error);
