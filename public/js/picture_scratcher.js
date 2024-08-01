@@ -242,8 +242,6 @@ const createScratchCard = () => {
                 drawHasEnteredImage();
                 return;
             } else {
-                drawBottomImage();
-                drawTopImage();
                 requestAnimationFrame(checkScratchedPercentage);
             }
         } catch (error) {
