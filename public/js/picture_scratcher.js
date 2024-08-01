@@ -183,12 +183,12 @@ const createScratchCard = () => {
             drawHasEnteredImage();
             return;
         }
-        if (percentage > 60) {
+        if (percentage > 67) {
             drawHasScratchedImage();
             scratchingAllowed = false; // Disable scratching
             setTimeout(() => {
                 scratchingAllowed = true; // Re-enable scratching after 3 seconds
-            }, 2000);
+            }, 1000);
             updateLeadStatus(leadId);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
@@ -219,16 +219,29 @@ const createScratchCard = () => {
             };
         });
 
+        const hasEnteredImgLoaded = new Promise((resolve, reject) => {
+            hasEnteredImg.onload = () => {
+                console.log('Has Entered image loaded.');
+                resolve();
+            };
+            hasEnteredImg.onerror = (error) => {
+                console.error('Error loading has entered image:', error);
+                reject(error);
+            };
+        });
+
         try {
-            await Promise.all([bottomImageLoaded, topImageLoaded]);
+            await Promise.all([bottomImageLoaded, topImageLoaded, hasEnteredImgLoaded]);
             resizeCanvas();
             document.querySelector('.bottom-image-container').classList.add('show');
-            requestAnimationFrame(checkScratchedPercentage);
+            
             hasScratched = await checkLeadStatus(leadId);
             console.log("HAS SCRATCHED", hasScratched);
             if (hasScratched === 'true') {
                 drawHasEnteredImage();
                 return;
+            } else {
+                requestAnimationFrame(checkScratchedPercentage);
             }
         } catch (error) {
             console.error('Error initializing scratch card:', error);
