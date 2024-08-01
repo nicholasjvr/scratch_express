@@ -134,8 +134,9 @@ const createScratchCard = () => {
 
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
-        if (percentage > 90) {
-            alert(`You Have Successfully Entered The Competition (scratched 90%)`);
+        if (percentage > 75) {
+            alert(`You Have Successfully Entered The Competition`);
+            alert('Open Your Email')
             updateLeadStatus(leadId);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
@@ -144,35 +145,6 @@ const createScratchCard = () => {
 
     // Initialize the scratch card
     const initializeScratchCard = async () => {
-        
-
-        // console.log("HELLO");
-        // bottomImage.onload = () => {
-        //     console.log('Bottom image loaded.');
-        //     topImage.onload = async () => {
-        //         console.log('Top image loaded.');
-        //         drawBottomImage();
-        //         drawTopImage();
-        //         document.querySelector('.bottom-image-container').classList.add('show');
-        //         requestAnimationFrame(checkScratchedPercentage);
-        //         const hasScratched = await checkLeadStatus(leadId);
-        //         console.log("HAS SCRATCHED", hasScratched);
-        //         if (hasScratched === 'true') {
-        //             alert('You Have Already Scratched and Entered The Competition');
-        //             return;
-        //         }
-        //     };
-        //     topImage.onerror = (error) => {
-        //         console.error('Error loading top image:', error);
-        //     };
-        //     drawBottomImage(); // Draw bottom image first
-        // };
-
-        // bottomImage.onerror = (error) => {
-        //     console.error('Error loading bottom image:', error);
-        // };
-
-        // New code with changes
         // Load images
         const bottomImageLoaded = new Promise((resolve, reject) => {
             bottomImage.onload = () => {
@@ -218,7 +190,7 @@ const createScratchCard = () => {
     // Adjust canvas size on resize
     window.addEventListener('resize', () => {
         const portrait = window.matchMedia("(orientation: portrait)").matches;
-        canvas.width = portrait ? 400 : 420; // Adjust width as needed
+        canvas.width = portrait ? 380 : 420; // Adjust width as needed
         canvas.height = portrait ? 550 : 600; // Adjust height as needed
         drawBottomImage();
         drawTopImage();
