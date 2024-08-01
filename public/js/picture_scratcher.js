@@ -65,12 +65,26 @@ const createScratchCard = () => {
     };
 
     // Event listeners for mouse and touch events
+    // const handlePointerMove = (event) => {
+    //     event.preventDefault();
+    //     if (isDragging) {
+    //         scratch(event.clientX || event.touches[0].clientX, event.clientY || event.touches[0].clientY);
+    //     }
+    // };
+
     const handlePointerMove = (event) => {
         event.preventDefault();
         if (isDragging) {
-            scratch(event.clientX || event.touches[0].clientX, event.clientY || event.touches[0].clientY);
+            if (event.touches && event.touches.length > 0) {
+                // Touch event
+                scratch(event.touches[0].clientX, event.touches[0].clientY);
+            } else {
+                // Mouse event
+                scratch(event.clientX, event.clientY);
+            }
         }
     };
+    
 
     canvas.addEventListener("mousedown", (event) => {
         event.preventDefault();
