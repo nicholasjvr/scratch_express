@@ -11,8 +11,10 @@ const createScratchCard = () => {
     // Set the source for images
     bottomImage.src = 'img/you_win.png';
     topImage.src = 'img/scratch_here.png';
-    hasScratchedImg.src = 'img/ThankYou.png'
-    hasEnteredImg.src = 'img/YouHaveEntered.png'
+    hasScratchedImg.src = 'img/ThankYou.png';
+    hasEnteredImg.src = 'img/YouHaveEntered.png';
+
+    let hasEnteredImgPosition = { x: 0, y: 0, width: 0, height: 0 };
 
     // Draw the bottom image first
     const drawBottomImage = () => {
@@ -26,18 +28,25 @@ const createScratchCard = () => {
         context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
     };
 
-     // Draw the top image on top of the bottom image
-     const drawHasScratchedImage = () => {
+    // Draw the has scratched image
+    const drawHasScratchedImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
     };
 
-      // Draw the top image on top of the bottom image
-      const drawHasEnteredImage = () => {
+    // Draw the has entered image
+    const drawHasEnteredImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasEnteredImg, 0, 0, canvas.width, canvas.height);
-    };
 
+        // Store position and dimensions of hasEnteredImg
+        hasEnteredImgPosition = {
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
+        };
+    };
 
     // Handle the scratch effect
     const scratch = (x, y) => {
@@ -46,10 +55,21 @@ const createScratchCard = () => {
         const canvasX = x - rect.left;
         const canvasY = y - rect.top;
 
-        context.globalCompositeOperation = "destination-out";
-        context.beginPath();
-        context.arc(canvasX, canvasY, scratchRadius, 0, 2 * Math.PI);
-        context.fill();
+        // Check if the point is within the area covered by hasEnteredImg
+        const withinHasEnteredImg = (
+            canvasX >= hasEnteredImgPosition.x &&
+            canvasX <= hasEnteredImgPosition.x + hasEnteredImgPosition.width &&
+            canvasY >= hasEnteredImgPosition.y &&
+            canvasY <= hasEnteredImgPosition.y + hasEnteredImgPosition.height
+        );
+
+        if (!withinHasEnteredImg) {
+            // Apply scratch effect only if not in the hasEnteredImg area
+            context.globalCompositeOperation = "destination-out";
+            context.beginPath();
+            context.arc(canvasX, canvasY, scratchRadius, 0, 2 * Math.PI);
+            context.fill();
+        }
     };
 
     // Event listeners for mouse and touch events
@@ -152,7 +172,6 @@ const createScratchCard = () => {
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
         if (percentage > 85) {
-            alert(`You Have Successfully Entered The Competition`); 
             drawHasScratchedImage();
             updateLeadStatus(leadId);
         } else {
@@ -202,7 +221,6 @@ const createScratchCard = () => {
         } catch (error) {
             console.error('Error initializing scratch card:', error);
         }
-
     };
 
     // Adjust canvas size on resize
