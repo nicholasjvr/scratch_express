@@ -34,8 +34,6 @@ img {
 }
 
 .main-container {
-    padding: var(--main-padding);
-    text-align: center;
     width: 100%;
     height: 100%;
     position: relative;

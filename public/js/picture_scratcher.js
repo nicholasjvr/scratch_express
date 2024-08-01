@@ -11,8 +11,15 @@ const createScratchCard = () => {
     // Set the source for images
     bottomImage.src = 'img/you_win.png';
     topImage.src = 'img/scratch_here.png';
-    hasScratchedImg.src = 'img/ThankYou.png'
-    hasEnteredImg.src = 'img/YouHaveEntered.png'
+    hasScratchedImg.src = 'img/ThankYou.png';
+    hasEnteredImg.src = 'img/YouHaveEntered.png';
+
+    const resizeCanvas = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        drawBottomImage();
+        drawTopImage();
+    };
 
     // Draw the bottom image first
     const drawBottomImage = () => {
@@ -26,22 +33,18 @@ const createScratchCard = () => {
         context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
     };
 
-     // Draw the top image on top of the bottom image
-     const drawHasScratchedImage = () => {
+    const drawHasScratchedImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
     };
 
-      // Draw the top image on top of the bottom image
-      const drawHasEnteredImage = () => {
+    const drawHasEnteredImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasEnteredImg, 0, 0, canvas.width, canvas.height);
     };
 
-
     // Handle the scratch effect
     const scratch = (x, y) => {
-        // Adjust coordinates to be relative to the canvas
         const rect = canvas.getBoundingClientRect();
         const canvasX = x - rect.left;
         const canvasY = y - rect.top;
@@ -90,7 +93,6 @@ const createScratchCard = () => {
         isDragging = false;
     });
 
-    // Calculate the percentage of scratched area
     const calculateScratchedPercentage = () => {
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         let totalPixels = imageData.width * imageData.height;
@@ -117,7 +119,6 @@ const createScratchCard = () => {
 
     const checkLeadStatus = async (leadId) => {
         const url = `https://scratch.dsltelecom.co.za/status/${leadId}`;
-
 
         try {
             const response = await fetch(url, { method: 'GET' });
@@ -162,7 +163,6 @@ const createScratchCard = () => {
 
     // Initialize the scratch card
     const initializeScratchCard = async () => {
-        // Load images
         const bottomImageLoaded = new Promise((resolve, reject) => {
             bottomImage.onload = () => {
                 console.log('Bottom image loaded.');
@@ -186,44 +186,27 @@ const createScratchCard = () => {
         });
 
         try {
-            // Wait for both images to load
             await Promise.all([bottomImageLoaded, topImageLoaded]);
-            drawBottomImage();
-            drawTopImage();
+            resizeCanvas();
             document.querySelector('.bottom-image-container').classList.add('show');
             requestAnimationFrame(checkScratchedPercentage);
             const hasScratched = await checkLeadStatus(leadId);
             console.log("HAS SCRATCHED", hasScratched);
             if (hasScratched === 'true') {
-                // alert('You Have Already Scratched and Entered The Competition');
                 drawHasEnteredImage();
                 return;
             }
         } catch (error) {
             console.error('Error initializing scratch card:', error);
         }
-
     };
 
-    // Adjust canvas size on resize
-    window.addEventListener('resize', () => {
-        const portrait = window.matchMedia("(orientation: portrait)").matches;
-        canvas.width = portrait ? 380 : 420; // Adjust width as needed
-        canvas.height = portrait ? 550 : 600; // Adjust height as needed
-        drawBottomImage();
-        drawTopImage();
-    });
-
+    window.addEventListener('resize', resizeCanvas);
     initializeScratchCard();
 
-    // Disable touch scroll on mobile devices
     document.body.addEventListener('touchmove', (event) => {
         event.preventDefault();
     }, { passive: false });
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    createScratchCard();
-});
-
-
+document.addEventListener('DOMContentLoaded', createScratchCard);
