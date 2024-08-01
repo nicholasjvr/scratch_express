@@ -4,13 +4,15 @@ const createScratchCard = () => {
     let topImage = new Image();
     let bottomImage = new Image();
     let hasScratchedImg = new Image();
+    let hasEnteredImg = new Image();
     let scratchRadius = 30;
     let isDragging = false;
 
     // Set the source for images
     bottomImage.src = 'img/you_win.png';
     topImage.src = 'img/scratch_here.png';
-    hasScratchedImg.src = ''
+    hasScratchedImg.src = 'img/ThankYou.png'
+    hasEnteredImg.src = 'img/YouHaveEntered.png'
 
     // Draw the bottom image first
     const drawBottomImage = () => {
@@ -29,6 +31,13 @@ const createScratchCard = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
     };
+
+      // Draw the top image on top of the bottom image
+      const drawHasEnteredImage = () => {
+        context.globalCompositeOperation = "source-over";
+        context.drawImage(hasEnteredImg, 0, 0, canvas.width, canvas.height);
+    };
+
 
     // Handle the scratch effect
     const scratch = (x, y) => {
@@ -143,8 +152,8 @@ const createScratchCard = () => {
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
         if (percentage > 85) {
-            alert(`You Have Successfully Entered The Competition`);
-            alert('Open Your Email')
+            alert(`You Have Successfully Entered The Competition`); 
+            drawHasScratchedImage();
             updateLeadStatus(leadId);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
@@ -187,7 +196,7 @@ const createScratchCard = () => {
             console.log("HAS SCRATCHED", hasScratched);
             if (hasScratched === 'true') {
                 // alert('You Have Already Scratched and Entered The Competition');
-                drawHasScratchedImage();
+                drawHasEnteredImage();
                 return;
             }
         } catch (error) {
