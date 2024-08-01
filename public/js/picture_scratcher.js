@@ -3,12 +3,14 @@ const createScratchCard = () => {
     let context = canvas.getContext("2d", { willReadFrequently: true });
     let topImage = new Image();
     let bottomImage = new Image();
+    let hasScratchedImg = new Image();
     let scratchRadius = 30;
     let isDragging = false;
 
     // Set the source for images
     bottomImage.src = 'img/you_win.png';
     topImage.src = 'img/scratch_here.png';
+    hasScratchedImg.src = ''
 
     // Draw the bottom image first
     const drawBottomImage = () => {
@@ -20,6 +22,12 @@ const createScratchCard = () => {
     const drawTopImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
+    };
+
+     // Draw the top image on top of the bottom image
+     const drawHasScratchedImage = () => {
+        context.globalCompositeOperation = "source-over";
+        context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
     };
 
     // Handle the scratch effect
@@ -178,7 +186,8 @@ const createScratchCard = () => {
             const hasScratched = await checkLeadStatus(leadId);
             console.log("HAS SCRATCHED", hasScratched);
             if (hasScratched === 'true') {
-                alert('You Have Already Scratched and Entered The Competition');
+                // alert('You Have Already Scratched and Entered The Competition');
+                drawHasScratchedImage();
                 return;
             }
         } catch (error) {
