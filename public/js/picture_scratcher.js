@@ -39,8 +39,16 @@ const createScratchCard = () => {
     };
 
     const drawHasEnteredImage = () => {
-        context.globalCompositeOperation = "source-over";
-        context.drawImage(hasEnteredImg, 0, 0, canvas.width, canvas.height);
+        let hasEnteredImageElement = document.createElement('img');
+        hasEnteredImageElement.src = 'img/YouHaveEntered.png';
+        hasEnteredImageElement.id = 'hasEnteredImg'; // Assign an ID for styling
+        hasEnteredImageElement.style.position = 'absolute'; // Position it absolutely
+        hasEnteredImageElement.style.top = '0'; // Adjust as needed
+        hasEnteredImageElement.style.left = '0'; // Adjust as needed
+        hasEnteredImageElement.style.width = '100%'; // Adjust as needed
+        hasEnteredImageElement.style.height = '100%'; // Adjust as needed
+        hasEnteredImageElement.style.pointerEvents = 'none'; // Make it non-interactive
+        document.body.appendChild(hasEnteredImageElement);
     };
 
     // Handle the scratch effect

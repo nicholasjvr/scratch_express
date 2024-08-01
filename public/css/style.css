@@ -33,6 +33,13 @@ img {
     --button-font-size: 16px;
 }
 
+#hasEnteredImg {
+    /* Add your styling here */
+    border: 1px solid black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Add more styles as needed */
+}
+
 .main-container {
     width: 100%;
     height: 100%;
