@@ -8,60 +8,51 @@ const createScratchCard = () => {
     let scratchRadius = 30;
     let isDragging = false;
 
+    // Set the source for images
     bottomImage.src = 'img/you_win.png';
     topImage.src = 'img/scratch_here.png';
-    hasScratchedImg.src = 'img/ThankYou.png';
-    hasEnteredImg.src = 'img/YouHaveEntered.png';
+    hasScratchedImg.src = 'img/ThankYou.png'
+    hasEnteredImg.src = 'img/YouHaveEntered.png'
 
-    let hasEnteredImgPosition = { x: 0, y: 0, width: 0, height: 0 };
-
+    // Draw the bottom image first
     const drawBottomImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(bottomImage, 0, 0, canvas.width, canvas.height);
     };
 
+    // Draw the top image on top of the bottom image
     const drawTopImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
     };
 
-    const drawHasScratchedImage = () => {
+     // Draw the top image on top of the bottom image
+     const drawHasScratchedImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
     };
 
-    const drawHasEnteredImage = () => {
+      // Draw the top image on top of the bottom image
+      const drawHasEnteredImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasEnteredImg, 0, 0, canvas.width, canvas.height);
-
-        hasEnteredImgPosition = {
-            x: 0,
-            y: 0,
-            width: canvas.width,
-            height: canvas.height
-        };
     };
 
+
+    // Handle the scratch effect
     const scratch = (x, y) => {
+        // Adjust coordinates to be relative to the canvas
         const rect = canvas.getBoundingClientRect();
         const canvasX = x - rect.left;
         const canvasY = y - rect.top;
 
-        const withinHasEnteredImg = (
-            canvasX >= hasEnteredImgPosition.x &&
-            canvasX <= hasEnteredImgPosition.x + hasEnteredImgPosition.width &&
-            canvasY >= hasEnteredImgPosition.y &&
-            canvasY <= hasEnteredImgPosition.y + hasEnteredImgPosition.height
-        );
-
-        if (!withinHasEnteredImg) {
-            context.globalCompositeOperation = "destination-out";
-            context.beginPath();
-            context.arc(canvasX, canvasY, scratchRadius, 0, 2 * Math.PI);
-            context.fill();
-        }
+        context.globalCompositeOperation = "destination-out";
+        context.beginPath();
+        context.arc(canvasX, canvasY, scratchRadius, 0, 2 * Math.PI);
+        context.fill();
     };
 
+    // Event listeners for mouse and touch events
     const handlePointerMove = (event) => {
         event.preventDefault();
         if (isDragging) {
@@ -99,13 +90,14 @@ const createScratchCard = () => {
         isDragging = false;
     });
 
+    // Calculate the percentage of scratched area
     const calculateScratchedPercentage = () => {
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         let totalPixels = imageData.width * imageData.height;
         let scratchedPixels = 0;
 
         for (let i = 0; i < imageData.data.length; i += 4) {
-            if (imageData.data[i + 3] === 0) {
+            if (imageData.data[i + 3] === 0) { // alpha channel
                 scratchedPixels++;
             }
         }
@@ -124,13 +116,13 @@ const createScratchCard = () => {
     console.log('URL parameter prize:', leadId);
 
     const checkLeadStatus = async (leadId) => {
-        const url = `https://scratch.dsltelecom.co.za/status/${leadId}`;
+        const url = 'https://scratch.dsltelecom.co.za/status/${leadId}';
 
         try {
             const response = await fetch(url, { method: 'GET' });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error('HTTP error! status: ${response.status}');
             }
             const data = await response.json();
             console.log("CHECK LEAD STATUS RESPONSE", data.hasScratched);
@@ -142,13 +134,13 @@ const createScratchCard = () => {
     };
 
     const updateLeadStatus = async (leadId) => {
-        const url = `https://scratch.dsltelecom.co.za/status/${leadId}`;
+        const url = 'https://scratch.dsltelecom.co.za/status/${leadId}';
 
         try {
             const response = await fetch(url, { method: 'POST' });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error('HTTP error! status: ${response.status}');
             }
             const data = await response.json();
             console.log("Update data status", data);
@@ -160,33 +152,77 @@ const createScratchCard = () => {
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
         if (percentage > 85) {
-            drawBottomImage();
-            updateLeadStatus(leadId);
-        }
-    };
-
-    const initialize = async () => {
-        const leadStatus = await checkLeadStatus(leadId);
-        if (leadStatus === false) {
-            drawTopImage();
-            drawHasEnteredImage();
-            setInterval(checkScratchedPercentage, 1000);
-        } else {
             drawHasScratchedImage();
+            updateLeadStatus(leadId);
+        } else {
+            requestAnimationFrame(checkScratchedPercentage);
         }
     };
 
-    window.addEventListener("resize", () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    // Initialize the scratch card
+    const initializeScratchCard = async () => {
+        // Load images
+        const bottomImageLoaded = new Promise((resolve, reject) => {
+            bottomImage.onload = () => {
+                console.log('Bottom image loaded.');
+                resolve();
+            };
+            bottomImage.onerror = (error) => {
+                console.error('Error loading bottom image:', error);
+                reject(error);
+            };
+        });
+
+        const topImageLoaded = new Promise((resolve, reject) => {
+            topImage.onload = () => {
+                console.log('Top image loaded.');
+                resolve();
+            };
+            topImage.onerror = (error) => {
+                console.error('Error loading top image:', error);
+                reject(error);
+            };
+        });
+
+        try {
+            // Wait for both images to load
+            await Promise.all([bottomImageLoaded, topImageLoaded]);
+            drawBottomImage();
+            drawTopImage();
+            document.querySelector('.bottom-image-container').classList.add('show');
+            requestAnimationFrame(checkScratchedPercentage);
+            const hasScratched = await checkLeadStatus(leadId);
+            console.log("HAS SCRATCHED", hasScratched);
+            if (hasScratched === 'true') {
+                // alert('You Have Already Scratched and Entered The Competition');
+                drawHasEnteredImage();
+                return;
+            }
+        } catch (error) {
+            console.error('Error initializing scratch card:', error);
+        }
+
+    };
+
+    // Adjust canvas size on resize
+    window.addEventListener('resize', () => {
+        const portrait = window.matchMedia("(orientation: portrait)").matches;
+        canvas.width = portrait ? 380 : 420; // Adjust width as needed
+        canvas.height = portrait ? 550 : 600; // Adjust height as needed
+        drawBottomImage();
         drawTopImage();
-        drawHasEnteredImage();
     });
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    initializeScratchCard();
 
-    initialize();
+    // Disable touch scroll on mobile devices
+    document.body.addEventListener('touchmove', (event) => {
+        event.preventDefault();
+    }, { passive: false });
 };
 
-createScratchCard();
+document.addEventListener('DOMContentLoaded', () => {
+    createScratchCard();
+});
+
+
