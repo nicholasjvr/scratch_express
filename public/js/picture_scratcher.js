@@ -162,7 +162,11 @@ const createScratchCard = () => {
 
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
-        if (percentage > 60 && hasScratched == false) {
+        if (hasScratched === 'true') {
+            drawHasEnteredImage();
+            return;
+        }
+        if (percentage > 60) {
             drawHasScratchedImage();
             updateLeadStatus(leadId);
         } else {
