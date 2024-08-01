@@ -8,6 +8,8 @@ const createScratchCard = () => {
     let scratchRadius = 30;
     let isDragging = false;
     let hasScratched = false;
+    let scratchingAllowed = true; // Variable to control scratching
+
 
     // Set the source for images
     bottomImage.src = 'img/you_win.png';
@@ -54,6 +56,7 @@ const createScratchCard = () => {
 
     // Handle the scratch effect
     const scratch = (x, y) => {
+        if (!scratchingAllowed) return; // Prevent scratching if not allowed
         const rect = canvas.getBoundingClientRect();
         const canvasX = x - rect.left;
         const canvasY = y - rect.top;
@@ -182,6 +185,10 @@ const createScratchCard = () => {
         }
         if (percentage > 60) {
             drawHasScratchedImage();
+            scratchingAllowed = false; // Disable scratching
+            setTimeout(() => {
+                scratchingAllowed = true; // Re-enable scratching after 3 seconds
+            }, 2000);
             updateLeadStatus(leadId);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
