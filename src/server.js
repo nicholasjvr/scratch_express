@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const app = express();
 const axios = require('axios');
-let accessToken = '1000.3161013b6bd7f90e94b001942aa43811.e37e3f3282984124673300a4e15d666e';
+let accessToken = '1000.0a9b3654c96bde968756f3c459a5f40c.d298b5ab4258e50f566d6c5d9c9b6323';
 const TOKEN_EXPIRATION_TIME = 60 * 60 * 1000; // e.g., 1 hour
 
 
