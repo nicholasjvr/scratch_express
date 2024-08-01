@@ -15,7 +15,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    height: 100%;
+    width: 100%;
 }
 
 img {
@@ -28,8 +29,6 @@ img {
     --border-color: rgb(255, 14, 14);
     --heading-padding: 8px 32px;
     --heading-margin-bottom: 42px;
-    --scratch-card-width:  400px;
-    --scratch-card-height: 600px;
     --border-radius: 10px;
     --margin-bottom: -50px;
     --font-size: 24px;
@@ -41,29 +40,21 @@ img {
 .main-container {
     padding: var(--main-padding);
     text-align: center;
-    max-width: 100%;
+    width: 100%;
+    height: 100%;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .scratch-container {
-    width: var(--scratch-card-width);
-    height: var(--scratch-card-height);
+    width: 100%;
+    height: 100%;
     border-radius: var(--border-radius);
-    margin: auto;
+    margin: 0;
     overflow: hidden;
     position: relative;
-}
-
-h2.main-heading {
-    padding: var(--heading-padding);
-    margin-top: 0;
-    margin-bottom: var(--heading-margin-bottom);
-    color: #000000;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.main-container h3 {
-    font-weight: normal;
 }
 
 .bottom-image-container {
@@ -101,7 +92,7 @@ canvas {
     position: fixed;
     bottom: 15px;
     width: 20%;
-    height: fit-content;
+    height: auto;
     z-index: 2;
 }
 
@@ -116,17 +107,14 @@ canvas {
 
 @media (orientation: portrait) {
     .main-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
         height: 100vh;
-        width: 100vh;
+        width: 100vw;
     }
 
     .scratch-container {
-        width: calc(var(--scratch-card-width) - 60px);
-        height: calc(var(--scratch-card-height) - 60px);
-        margin: 0 auto; /* Center horizontally */
+        width: 100%;
+        height: 100%;
+        margin: 0;
     }
 
     .logo-container {
@@ -140,18 +128,20 @@ canvas {
 
     .right-logo {
         right: 20px;
-        bottom: 30px; /* Adjust bottom positioning */
+        bottom: 30px;
     }
 }
 
 @media (orientation: landscape) {
     .main-container {
+        height: 100vh;
+        width: 100vw;
         padding: 0;
     }
 
     .scratch-container {
-        width: var(--scratch-card-width);
-        height: var(--scratch-card-height);
-        margin-top: 20px; /* Adjust top margin as needed */
+        width: 100%;
+        height: 100%;
+        margin: 0;
     }
 }

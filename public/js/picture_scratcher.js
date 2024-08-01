@@ -8,7 +8,6 @@ const createScratchCard = () => {
     let scratchRadius = 30;
     let isDragging = false;
 
-    // Set the source for images
     bottomImage.src = 'img/you_win.png';
     topImage.src = 'img/scratch_here.png';
     hasScratchedImg.src = 'img/ThankYou.png';
@@ -16,30 +15,25 @@ const createScratchCard = () => {
 
     let hasEnteredImgPosition = { x: 0, y: 0, width: 0, height: 0 };
 
-    // Draw the bottom image first
     const drawBottomImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(bottomImage, 0, 0, canvas.width, canvas.height);
     };
 
-    // Draw the top image on top of the bottom image
     const drawTopImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
     };
 
-    // Draw the has scratched image
     const drawHasScratchedImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
     };
 
-    // Draw the has entered image
     const drawHasEnteredImage = () => {
         context.globalCompositeOperation = "source-over";
         context.drawImage(hasEnteredImg, 0, 0, canvas.width, canvas.height);
 
-        // Store position and dimensions of hasEnteredImg
         hasEnteredImgPosition = {
             x: 0,
             y: 0,
@@ -48,14 +42,11 @@ const createScratchCard = () => {
         };
     };
 
-    // Handle the scratch effect
     const scratch = (x, y) => {
-        // Adjust coordinates to be relative to the canvas
         const rect = canvas.getBoundingClientRect();
         const canvasX = x - rect.left;
         const canvasY = y - rect.top;
 
-        // Check if the point is within the area covered by hasEnteredImg
         const withinHasEnteredImg = (
             canvasX >= hasEnteredImgPosition.x &&
             canvasX <= hasEnteredImgPosition.x + hasEnteredImgPosition.width &&
@@ -64,7 +55,6 @@ const createScratchCard = () => {
         );
 
         if (!withinHasEnteredImg) {
-            // Apply scratch effect only if not in the hasEnteredImg area
             context.globalCompositeOperation = "destination-out";
             context.beginPath();
             context.arc(canvasX, canvasY, scratchRadius, 0, 2 * Math.PI);
@@ -72,7 +62,6 @@ const createScratchCard = () => {
         }
     };
 
-    // Event listeners for mouse and touch events
     const handlePointerMove = (event) => {
         event.preventDefault();
         if (isDragging) {
@@ -110,14 +99,13 @@ const createScratchCard = () => {
         isDragging = false;
     });
 
-    // Calculate the percentage of scratched area
     const calculateScratchedPercentage = () => {
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         let totalPixels = imageData.width * imageData.height;
         let scratchedPixels = 0;
 
         for (let i = 0; i < imageData.data.length; i += 4) {
-            if (imageData.data[i + 3] === 0) { // alpha channel
+            if (imageData.data[i + 3] === 0) {
                 scratchedPixels++;
             }
         }
@@ -172,74 +160,33 @@ const createScratchCard = () => {
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
         if (percentage > 85) {
-            drawHasScratchedImage();
-            updateLeadStatus(leadId);
-        } else {
-            requestAnimationFrame(checkScratchedPercentage);
-        }
-    };
-
-    // Initialize the scratch card
-    const initializeScratchCard = async () => {
-        // Load images
-        const bottomImageLoaded = new Promise((resolve, reject) => {
-            bottomImage.onload = () => {
-                console.log('Bottom image loaded.');
-                resolve();
-            };
-            bottomImage.onerror = (error) => {
-                console.error('Error loading bottom image:', error);
-                reject(error);
-            };
-        });
-
-        const topImageLoaded = new Promise((resolve, reject) => {
-            topImage.onload = () => {
-                console.log('Top image loaded.');
-                resolve();
-            };
-            topImage.onerror = (error) => {
-                console.error('Error loading top image:', error);
-                reject(error);
-            };
-        });
-
-        try {
-            // Wait for both images to load
-            await Promise.all([bottomImageLoaded, topImageLoaded]);
             drawBottomImage();
-            drawTopImage();
-            document.querySelector('.bottom-image-container').classList.add('show');
-            requestAnimationFrame(checkScratchedPercentage);
-            const hasScratched = await checkLeadStatus(leadId);
-            console.log("HAS SCRATCHED", hasScratched);
-            if (hasScratched === 'true') {
-                // alert('You Have Already Scratched and Entered The Competition');
-                drawHasEnteredImage();
-                return;
-            }
-        } catch (error) {
-            console.error('Error initializing scratch card:', error);
+            updateLeadStatus(leadId);
         }
     };
 
-    // Adjust canvas size on resize
-    window.addEventListener('resize', () => {
-        const portrait = window.matchMedia("(orientation: portrait)").matches;
-        canvas.width = portrait ? 380 : 420; // Adjust width as needed
-        canvas.height = portrait ? 550 : 600; // Adjust height as needed
-        drawBottomImage();
+    const initialize = async () => {
+        const leadStatus = await checkLeadStatus(leadId);
+        if (leadStatus === false) {
+            drawTopImage();
+            drawHasEnteredImage();
+            setInterval(checkScratchedPercentage, 1000);
+        } else {
+            drawHasScratchedImage();
+        }
+    };
+
+    window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         drawTopImage();
+        drawHasEnteredImage();
     });
 
-    initializeScratchCard();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    // Disable touch scroll on mobile devices
-    document.body.addEventListener('touchmove', (event) => {
-        event.preventDefault();
-    }, { passive: false });
+    initialize();
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    createScratchCard();
-});
+createScratchCard();
