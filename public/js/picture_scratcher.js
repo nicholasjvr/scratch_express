@@ -7,6 +7,7 @@ const createScratchCard = () => {
     let hasEnteredImg = new Image();
     let scratchRadius = 30;
     let isDragging = false;
+    let hasScratched = false;
 
     // Set the source for images
     bottomImage.src = 'img/you_win.png';
@@ -161,7 +162,7 @@ const createScratchCard = () => {
 
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
-        if (percentage > 85) {
+        if (percentage > 85 && hasScratched == false) {
             drawHasScratchedImage();
             updateLeadStatus(leadId);
         } else {
@@ -198,7 +199,7 @@ const createScratchCard = () => {
             resizeCanvas();
             document.querySelector('.bottom-image-container').classList.add('show');
             requestAnimationFrame(checkScratchedPercentage);
-            const hasScratched = await checkLeadStatus(leadId);
+            hasScratched = await checkLeadStatus(leadId);
             console.log("HAS SCRATCHED", hasScratched);
             if (hasScratched === 'true') {
                 drawHasEnteredImage();
