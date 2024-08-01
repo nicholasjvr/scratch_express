@@ -134,7 +134,7 @@ const createScratchCard = () => {
 
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
-        if (percentage > 75) {
+        if (percentage > 85) {
             alert(`You Have Successfully Entered The Competition`);
             alert('Open Your Email')
             updateLeadStatus(leadId);
