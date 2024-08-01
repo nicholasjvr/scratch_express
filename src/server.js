@@ -19,25 +19,6 @@ console.log(staticPath);
 
 app.use(express.static(staticPath))
 
-// Refresh token immediately on server start
-const initializeServer = async () => {
-    try {
-        await refreshToken(); // Refresh token when server starts
-        console.log("Token refreshed successfully.");
-
-        app.listen(8000, () => {
-            console.log("Server running on port 8000");
-        });
-
-        // Set interval to refresh token periodically
-        setInterval(refreshToken, TOKEN_EXPIRATION_TIME - (5 * 60 * 1000)); // Refresh 5 minutes before expiration
-    } catch (error) {
-        console.error("Error initializing server:", error);
-    }
-};
-
-initializeServer();
-
 const refreshToken = async () => {
     const config = {
         method: 'POST',
@@ -124,13 +105,13 @@ app.get('/status/:leadId', async function (req, res) {
  })
 
 
-// //setInterval(refreshToken, 2);
-// setInterval(refreshToken, TOKEN_EXPIRATION_TIME - (5 * 60 * 1000)); // Refresh 5 minutes before expiration
+//setInterval(refreshToken, 2);
+setInterval(refreshToken, TOKEN_EXPIRATION_TIME - (5 * 60 * 1000)); // Refresh 5 minutes before expiration
 
 
-// app.listen(8000, () => {
-//     console.log("Port Running On 8000")
-// })
+app.listen(8000, () => {
+    console.log("Port Running On 8000")
+})
 
 
 
