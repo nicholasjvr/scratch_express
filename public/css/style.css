@@ -25,12 +25,9 @@ img {
 }
 
 :root {
-    --main-padding: 20px;
+    --main-padding: 2x;
     --border-color: rgb(255, 14, 14);
-    --heading-padding: 8px 32px;
-    --heading-margin-bottom: 42px;
     --border-radius: 10px;
-    --margin-bottom: -50px;
     --font-size: 24px;
     --letter-spacing: 2px;
     --button-padding: 8px 16px;
