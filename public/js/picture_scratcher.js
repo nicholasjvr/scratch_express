@@ -237,10 +237,13 @@ const createScratchCard = () => {
             
             hasScratched = await checkLeadStatus(leadId);
             console.log("HAS SCRATCHED", hasScratched);
+            //Add in here if has scratched == null or empty then show invalid URL page
             if (hasScratched === 'true') {
                 drawHasEnteredImage();
                 return;
             } else {
+                drawBottomImage();
+                drawTopImage();
                 requestAnimationFrame(checkScratchedPercentage);
             }
         } catch (error) {
