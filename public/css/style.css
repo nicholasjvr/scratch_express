@@ -106,7 +106,7 @@ canvas {
     bottom: 35px;
 }
 
-@media (min-width: 1080px) {
+/* @media (min-width: 1080px) {
     .bottom-image-container img,
     #hasEnteredImg,
     #scratch-canvas {
@@ -127,6 +127,6 @@ canvas {
     #hasEnteredImg,
     #scratch-canvas {
         background-image: url('img/mobile_image.png');
-    }
-}
+    } */
+
 
