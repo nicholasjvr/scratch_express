@@ -10,7 +10,6 @@ const createScratchCard = () => {
     let hasScratched = false;
     let scratchingAllowed = true; // Variable to control scratching
 
-
     // Function to get image based on screen size
     const getImageBasedOnScreenSize = (desktopImage, tabletImage, mobileImage) => {
         const screenWidth = window.innerWidth;
@@ -19,7 +18,7 @@ const createScratchCard = () => {
             return desktopImage;
         } else if (screenWidth >= 800 && screenWidth < 1080) {
             return tabletImage;
-        } else {
+        } else if (screenWidth < 800) {
             return mobileImage;
         }
     };
@@ -29,6 +28,18 @@ const createScratchCard = () => {
     topImage.src = getImageBasedOnScreenSize('img/scratch_here_desktop.png', 'img/scratch_here_mobile.png', 'img/scratch_here_mobile.png');
     hasScratchedImg.src = getImageBasedOnScreenSize('img/thank_you_entry_desktop.png', 'img/thank_you_entry_mobile.png', 'img/thank_you_entry_mobile.png');
     hasEnteredImg.src = getImageBasedOnScreenSize('img/already_entered_desktop.png', 'img/already_entered_mobile.png', 'img/already_entered_mobile');
+
+    const handleImageError = (imageName) => (error) => {
+        console.error(`Error loading ${imageName}:`, error);
+    };
+
+    const loadImage = (image, name) => new Promise((resolve, reject) => {
+        image.onload = () => {
+            console.log(`${name} loaded.`);
+            resolve();
+        };
+        image.onerror = handleImageError(name);
+    });
 
     const resizeCanvas = () => {
         canvas.width = window.innerWidth;
@@ -40,18 +51,30 @@ const createScratchCard = () => {
     // Draw the bottom image first
     const drawBottomImage = () => {
         context.globalCompositeOperation = "source-over";
-        context.drawImage(bottomImage, 0, 0, canvas.width, canvas.height);
+        if (bottomImage.complete && bottomImage.naturalHeight !== 0) {
+            context.drawImage(bottomImage, 0, 0, canvas.width, canvas.height);
+        } else {
+            console.error('Bottom image not loaded or broken');
+        }
     };
 
     // Draw the top image on top of the bottom image
     const drawTopImage = () => {
         context.globalCompositeOperation = "source-over";
-        context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
+        if (topImage.complete && topImage.naturalHeight !== 0) {
+            context.drawImage(topImage, 0, 0, canvas.width, canvas.height);
+        } else {
+            console.error('Top image not loaded or broken');
+        }
     };
 
     const drawHasScratchedImage = () => {
         context.globalCompositeOperation = "source-over";
-        context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
+        if (hasScratchedImg.complete && hasScratchedImg.naturalHeight !== 0) {
+            context.drawImage(hasScratchedImg, 0, 0, canvas.width, canvas.height);
+        } else {
+            console.error('Has Scratched image not loaded or broken');
+        }
     };
 
     const drawHasEnteredImage = () => {
@@ -81,13 +104,6 @@ const createScratchCard = () => {
     };
 
     // Event listeners for mouse and touch events
-    // const handlePointerMove = (event) => {
-    //     event.preventDefault();
-    //     if (isDragging) {
-    //         scratch(event.clientX || event.touches[0].clientX, event.clientY || event.touches[0].clientY);
-    //     }
-    // };
-
     const handlePointerMove = (event) => {
         event.preventDefault();
         if (isDragging) {
@@ -100,7 +116,6 @@ const createScratchCard = () => {
             }
         }
     };
-    
 
     canvas.addEventListener("mousedown", (event) => {
         event.preventDefault();
@@ -202,9 +217,9 @@ const createScratchCard = () => {
                 drawHasScratchedImage();
                 scratchingAllowed = false; // Disable scratching
                 setTimeout(() => {
-                    scratchingAllowed = true; // Re-enable scratching after 3 seconds
+                    scratchingAllowed = true; // Re-enable scratching after 1 second
                 }, 1000);
-            },8000)
+            }, 8000);
         } else {
             requestAnimationFrame(checkScratchedPercentage);
         }
@@ -212,41 +227,12 @@ const createScratchCard = () => {
 
     // Initialize the scratch card
     const initializeScratchCard = async () => {
-        const bottomImageLoaded = new Promise((resolve, reject) => {
-            bottomImage.onload = () => {
-                console.log('Bottom image loaded.');
-                resolve();
-            };
-            bottomImage.onerror = (error) => {
-                console.error('Error loading bottom image:', error);
-                reject(error);
-            };
-        });
-
-        const topImageLoaded = new Promise((resolve, reject) => {
-            topImage.onload = () => {
-                console.log('Top image loaded.');
-                resolve();
-            };
-            topImage.onerror = (error) => {
-                console.error('Error loading top image:', error);
-                reject(error);
-            };
-        });
-
-        const hasEnteredImgLoaded = new Promise((resolve, reject) => {
-            hasEnteredImg.onload = () => {
-                console.log('Has Entered image loaded.');
-                resolve();
-            };
-            hasEnteredImg.onerror = (error) => {
-                console.error('Error loading has entered image:', error);
-                reject(error);
-            };
-        });
-
         try {
-            await Promise.all([bottomImageLoaded, topImageLoaded, hasEnteredImgLoaded]);
+            await Promise.all([
+                loadImage(bottomImage, 'bottom image'),
+                loadImage(topImage, 'top image'),
+                loadImage(hasEnteredImg, 'has entered image')
+            ]);
             resizeCanvas();
             document.querySelector('.bottom-image-container').classList.add('show');
             
