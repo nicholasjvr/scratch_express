@@ -183,13 +183,15 @@ const createScratchCard = () => {
             drawHasEnteredImage();
             return;
         }
-        if (percentage > 67) {
-            drawHasScratchedImage();
-            scratchingAllowed = false; // Disable scratching
-            setTimeout(() => {
-                scratchingAllowed = true; // Re-enable scratching after 3 seconds
-            }, 1000);
+        if (percentage > 70) {
             updateLeadStatus(leadId);
+            setTimeout(() => {
+                drawHasScratchedImage();
+                scratchingAllowed = false; // Disable scratching
+                setTimeout(() => {
+                    scratchingAllowed = true; // Re-enable scratching after 3 seconds
+                }, 1000);
+            },8000)
         } else {
             requestAnimationFrame(checkScratchedPercentage);
         }
