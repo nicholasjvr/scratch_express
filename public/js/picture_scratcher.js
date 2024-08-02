@@ -227,11 +227,6 @@ const createScratchCard = () => {
         } else {
             requestAnimationFrame(checkScratchedPercentage);
         }
-        if (percentage > 1) {
-            logoContainer.style.display = 'none';
-        } else {
-            requestAnimationFrame(checkScratchedPercentage);
-        }
     };
 
     // Initialize the scratch card
