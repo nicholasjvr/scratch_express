@@ -9,11 +9,24 @@ const createScratchCard = () => {
     let isDragging = false;
     let hasScratched = false;
 
+    // Function to get image based on screen size
+    const getImageBasedOnScreenSize = (desktopImage, tabletImage, mobileImage) => {
+        const screenWidth = window.innerWidth;
+
+        if (screenWidth >= 1080) {
+            return desktopImage;
+        } else if (screenWidth >= 800 && screenWidth < 1080) {
+            return tabletImage;
+        } else {
+            return mobileImage;
+        }
+    };
+
     // Set the source for images
-    bottomImage.src = 'img/you_win.png';
-    topImage.src = 'img/scratch_here.png';
-    hasScratchedImg.src = 'img/ThankYou.png';
-    hasEnteredImg.src = 'img/YouHaveEntered.png';
+    bottomImage.src = getImageBasedOnScreenSize('img/desktop_bottom.png', 'img/tablet_bottom.png', 'img/mobile_bottom.png');
+    topImage.src = getImageBasedOnScreenSize('img/scratch_here_desktop.png', 'img/scratch_here_mobile.png', 'img/scratch_here_mobile.png');
+    hasScratchedImg.src = getImageBasedOnScreenSize('img/thank_you_entry_desktop.png', 'img/thank_you_entry_mobile.png', 'img/thank_you_entry_mobile.png');
+    hasEnteredImg.src = getImageBasedOnScreenSize('img/already_entered_desktop.png', 'img/already_entered_mobile.png', 'img/already_entered_mobile');
 
     const resizeCanvas = () => {
         canvas.width = window.innerWidth;
@@ -41,7 +54,7 @@ const createScratchCard = () => {
 
     const drawHasEnteredImage = () => {
         let hasEnteredImageElement = document.createElement('img');
-        hasEnteredImageElement.src = 'img/YouHaveEntered.png';
+        hasEnteredImageElement.src = hasEnteredImg.src;
         hasEnteredImageElement.id = 'hasEnteredImg'; // Assign an ID for styling
         hasEnteredImageElement.style.position = 'absolute'; // Position it absolutely
         hasEnteredImageElement.style.top = '0'; // Adjust as needed
@@ -133,7 +146,7 @@ const createScratchCard = () => {
             const response = await fetch(url, { method: 'GET' });
 
             if (!response.ok) {
-                throw new Error('HTTP error! status: ${response.status}');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             console.log("CHECK LEAD STATUS RESPONSE", data.hasScratched);
@@ -151,7 +164,7 @@ const createScratchCard = () => {
             const response = await fetch(url, { method: 'POST' });
 
             if (!response.ok) {
-                throw new Error('HTTP error! status: ${response.status}');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             console.log("Update data status", data);
@@ -200,22 +213,19 @@ const createScratchCard = () => {
             document.querySelector('.bottom-image-container').classList.add('show');
             requestAnimationFrame(checkScratchedPercentage);
             hasScratched = await checkLeadStatus(leadId);
-            console.log("HAS SCRATCHED", hasScratched);
-            if (hasScratched === 'true') {
+            console.log("Lead has scratched:", hasScratched);
+            if (hasScratched) {
                 drawHasEnteredImage();
-                return;
             }
         } catch (error) {
             console.error('Error initializing scratch card:', error);
         }
     };
 
-    window.addEventListener('resize', resizeCanvas);
-    initializeScratchCard();
+    // Resize canvas when the window is resized
+    window.addEventListener("resize", resizeCanvas);
 
-    document.body.addEventListener('touchmove', (event) => {
-        event.preventDefault();
-    }, { passive: false });
+    initializeScratchCard();
 };
 
-document.addEventListener('DOMContentLoaded', createScratchCard);
+window.onload = createScratchCard;

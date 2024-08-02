@@ -106,43 +106,27 @@ canvas {
     bottom: 35px;
 }
 
-@media (orientation: portrait) {
-    .main-container {
-        height: 100vh;
-        width: 100vw;
-    }
-
-    .scratch-container {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-    }
-
-    .logo-container {
-        width: 30%;
-        bottom: 20px;
-    }
-
-    .left-logo {
-        left: 20px;
-    }
-
-    .right-logo {
-        right: 20px;
-        bottom: 30px;
+@media (min-width: 1080px) {
+    .bottom-image-container img,
+    #hasEnteredImg,
+    #scratch-canvas {
+        background-image: url('img/desktop_image.png');
     }
 }
 
-@media (orientation: landscape) {
-    .main-container {
-        height: 100vh;
-        width: 100vw;
-        padding: 0;
-    }
-
-    .scratch-container {
-        width: 100%;
-        height: 100%;
-        margin: 0;
+@media (min-width: 800px) and (max-width: 1079px) {
+    .bottom-image-container img,
+    #hasEnteredImg,
+    #scratch-canvas {
+        background-image: url('img/tablet_image.png');
     }
 }
+
+@media (max-width: 799px) {
+    .bottom-image-container img,
+    #hasEnteredImg,
+    #scratch-canvas {
+        background-image: url('img/mobile_image.png');
+    }
+}
+
