@@ -190,6 +190,8 @@ const createScratchCard = () => {
     };
 
     const updateLeadStatus = async (leadId) => {
+        const baseURL = `${window.location.protocol}//${window.location.host}`;
+        console.log("baseURL" + baseURL);
         const url = `https://scratch.dsltelecom.co.za/status/${leadId}`;
 
         try {
