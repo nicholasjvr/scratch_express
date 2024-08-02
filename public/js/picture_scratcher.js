@@ -8,6 +8,8 @@ const createScratchCard = () => {
     let scratchRadius = 30;
     let isDragging = false;
     let hasScratched = false;
+    let scratchingAllowed = true; // Variable to control scratching
+
 
     // Function to get image based on screen size
     const getImageBasedOnScreenSize = (desktopImage, tabletImage, mobileImage) => {
@@ -67,6 +69,7 @@ const createScratchCard = () => {
 
     // Handle the scratch effect
     const scratch = (x, y) => {
+        if (!scratchingAllowed) return; // Prevent scratching if not allowed
         const rect = canvas.getBoundingClientRect();
         const canvasX = x - rect.left;
         const canvasY = y - rect.top;
@@ -78,12 +81,26 @@ const createScratchCard = () => {
     };
 
     // Event listeners for mouse and touch events
+    // const handlePointerMove = (event) => {
+    //     event.preventDefault();
+    //     if (isDragging) {
+    //         scratch(event.clientX || event.touches[0].clientX, event.clientY || event.touches[0].clientY);
+    //     }
+    // };
+
     const handlePointerMove = (event) => {
         event.preventDefault();
         if (isDragging) {
-            scratch(event.clientX || event.touches[0].clientX, event.clientY || event.touches[0].clientY);
+            if (event.touches && event.touches.length > 0) {
+                // Touch event
+                scratch(event.touches[0].clientX, event.touches[0].clientY);
+            } else {
+                // Mouse event
+                scratch(event.clientX, event.clientY);
+            }
         }
     };
+    
 
     canvas.addEventListener("mousedown", (event) => {
         event.preventDefault();
@@ -175,9 +192,19 @@ const createScratchCard = () => {
 
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
-        if (percentage > 60) {
-            drawHasScratchedImage();
+        if (hasScratched === 'true') {
+            drawHasEnteredImage();
+            return;
+        }
+        if (percentage > 70) {
             updateLeadStatus(leadId);
+            setTimeout(() => {
+                drawHasScratchedImage();
+                scratchingAllowed = false; // Disable scratching
+                setTimeout(() => {
+                    scratchingAllowed = true; // Re-enable scratching after 3 seconds
+                }, 1000);
+            },8000)
         } else {
             requestAnimationFrame(checkScratchedPercentage);
         }
@@ -207,11 +234,22 @@ const createScratchCard = () => {
             };
         });
 
+        const hasEnteredImgLoaded = new Promise((resolve, reject) => {
+            hasEnteredImg.onload = () => {
+                console.log('Has Entered image loaded.');
+                resolve();
+            };
+            hasEnteredImg.onerror = (error) => {
+                console.error('Error loading has entered image:', error);
+                reject(error);
+            };
+        });
+
         try {
-            await Promise.all([bottomImageLoaded, topImageLoaded]);
+            await Promise.all([bottomImageLoaded, topImageLoaded, hasEnteredImgLoaded]);
             resizeCanvas();
             document.querySelector('.bottom-image-container').classList.add('show');
-            requestAnimationFrame(checkScratchedPercentage);
+            
             hasScratched = await checkLeadStatus(leadId);
             console.log("Lead has scratched:", hasScratched);
             if (hasScratched) {

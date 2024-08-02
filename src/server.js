@@ -1,9 +1,14 @@
 const express = require('express')
+require('dotenv').config();
 const path = require('path')
 const app = express();
 const axios = require('axios');
-let accessToken = '1000.3161013b6bd7f90e94b001942aa43811.e37e3f3282984124673300a4e15d666e';
 const TOKEN_EXPIRATION_TIME = 60 * 60 * 1000; // e.g., 1 hour
+const accessToken = process.env.ACCESS_TOKEN;
+const refresh_token = process.env.REFRESH_TOKEN;
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
+
 
 
 const accountUrl = 'https://accounts.zoho.com'
@@ -15,9 +20,6 @@ console.log(staticPath);
 app.use(express.static(staticPath))
 
 const refreshToken = async () => {
-    const refresh_token = '1000.7b4cb3ca4eba1431edc2c9331bda3849.f8abe27a8406625ad00ecd1b68e3d9f0';
-    const client_id = '1000.OKDTY1KS9PLK5YTUPP7Y6PU70DRMMF';
-    const client_secret = '578b43a2237c6ccdb07debe37305c2b784cf40671f';
     const config = {
         method: 'POST',
         url: `https://accounts.zoho.com/oauth/v2/token?refresh_token=${refresh_token}&client_id=${client_id}&client_secret=${client_secret}&grant_type=refresh_token`
@@ -29,7 +31,8 @@ const refreshToken = async () => {
         accessToken = response.data.access_token;
         console.log("Access Token" + accessToken);
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        throw error;
     }
     
 };
