@@ -238,7 +238,7 @@ const createScratchCard = () => {
             
             hasScratched = await checkLeadStatus(leadId);
             console.log("Lead has scratched:", hasScratched);
-            if (hasScratched) {
+            if (hasScratched === 'true') {
                 drawHasEnteredImage();
             }
         } catch (error) {
