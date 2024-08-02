@@ -18,7 +18,7 @@ const createScratchCard = () => {
             return desktopImage;
         } else if (screenWidth >= 800 && screenWidth < 1080) {
             return tabletImage;
-        } else if (screenWidth < 800) {
+        } else if (screenWidth) {
             return mobileImage;
         }
     };
@@ -27,7 +27,7 @@ const createScratchCard = () => {
     bottomImage.src = getImageBasedOnScreenSize('img/desktop_bottom.png', 'img/tablet_bottom.png', 'img/mobile_bottom.png');
     topImage.src = getImageBasedOnScreenSize('img/scratch_here_desktop.png', 'img/scratch_here_mobile.png', 'img/scratch_here_mobile.png');
     hasScratchedImg.src = getImageBasedOnScreenSize('img/thank_you_entry_desktop.png', 'img/thank_you_entry_mobile.png', 'img/thank_you_entry_mobile.png');
-    hasEnteredImg.src = getImageBasedOnScreenSize('img/already_entered_desktop.png', 'img/already_entered_mobile.png', 'img/already_entered_mobile');
+    hasEnteredImg.src = getImageBasedOnScreenSize('img/already_entered_desktop.png', 'img/already_entered_mobile.png', 'img/already_entered_mobile.png');
 
     const handleImageError = (imageName) => (error) => {
         console.error(`Error loading ${imageName}:`, error);
