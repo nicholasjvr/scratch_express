@@ -238,12 +238,12 @@ const createScratchCard = () => {
             ]);
             resizeCanvas();
             document.querySelector('.bottom-image-container').classList.add('show');
-            
             hasScratched = await checkLeadStatus(leadId);
             console.log("Lead has scratched:", hasScratched);
             if (hasScratched === 'true') {
                 drawHasEnteredImage();
             }
+            requestAnimationFrame(checkScratchedPercentage);
         } catch (error) {
             console.error('Error initializing scratch card:', error);
         }
