@@ -207,6 +207,7 @@ const createScratchCard = () => {
 
     const checkScratchedPercentage = () => {
         const percentage = calculateScratchedPercentage();
+        console.log("percentage" + percentage);
         if (hasScratched === 'true') {
             drawHasEnteredImage();
             return;
