@@ -5,10 +5,11 @@ const createScratchCard = () => {
     let bottomImage = new Image();
     let hasScratchedImg = new Image();
     let hasEnteredImg = new Image();
-    let scratchRadius = 30;
+    let scratchRadius = 50;
     let isDragging = false;
     let hasScratched = false;
     let scratchingAllowed = true; // Variable to control scratching
+    const logoContainer = document.querySelector('.logo-container');
 
     // Function to get image based on screen size
     const getImageBasedOnScreenSize = (desktopImage, tabletImage, mobileImage) => {
@@ -223,6 +224,11 @@ const createScratchCard = () => {
                     scratchingAllowed = true; // Re-enable scratching after 1 second
                 }, 1000);
             }, 8000);
+        } else {
+            requestAnimationFrame(checkScratchedPercentage);
+        }
+        if (percentage > 1) {
+            logoContainer.style.display = 'none';
         } else {
             requestAnimationFrame(checkScratchedPercentage);
         }
