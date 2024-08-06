@@ -106,7 +106,7 @@ app.get('/status/:leadId', async function (req, res) {
 
 
 //setInterval(refreshToken, 2);
-setInterval(refreshToken, TOKEN_EXPIRATION_TIME - (58 * 60 * 1000)); // Refresh 5 minutes before expiration
+setInterval(refreshToken, TOKEN_EXPIRATION_TIME - (10 * 60 * 1000)); // Refresh 5 minutes before expiration
 
 
 app.listen(8000, () => {
