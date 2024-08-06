@@ -4,7 +4,7 @@ const path = require('path')
 const app = express();
 const axios = require('axios');
 const TOKEN_EXPIRATION_TIME = 60 * 60 * 1000; // e.g., 1 hour
-const accessToken = process.env.ACCESS_TOKEN;
+let accessToken = process.env.ACCESS_TOKEN;
 const refresh_token = process.env.REFRESH_TOKEN;
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -106,7 +106,7 @@ app.get('/status/:leadId', async function (req, res) {
 
 
 //setInterval(refreshToken, 2);
-setInterval(refreshToken, TOKEN_EXPIRATION_TIME - (5 * 60 * 1000)); // Refresh 5 minutes before expiration
+setInterval(refreshToken, TOKEN_EXPIRATION_TIME - (58 * 60 * 1000)); // Refresh 5 minutes before expiration
 
 
 app.listen(8000, () => {
